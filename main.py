@@ -6,8 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from keras.models import Sequential
 from classes import DataGenerator
+from tensorflow.keras.layers import TextVectorization
 
-def convertImage(filePath): 
+"""def convertImage(filePath): 
     image = tf.keras.utils.load_img(filePath)
     input_arr = tf.keras.utils.img_to_array(image)
     return input_arr
@@ -18,27 +19,57 @@ trainDataDf[1] = 'input/224x224/' + trainDataDf[1].astype(str)
 trainDataDf[1] = trainDataDf[1].apply(convertImage)
 print(trainDataDf.head())
 
-from tensorflow.keras.layers import TextVectorization
 training_labels = trainDataDf[6]
 vectorizer = TextVectorization(output_mode = "binary", ngrams=2)
 vectorizer.adapt(training_labels)
-oneHotLabels = vectorizer(training_labels)
-print(oneHotLabels)
+oneHotLabelsTrain = vectorizer(training_labels)
+print(oneHotLabelsTrain)
 
-# Parameters
-params = {'dim': (32,32,32),
-          'batch_size': 64,
-          'n_classes': 6,
-          'n_channels': 1,
-          'shuffle': True}
+#Convert test data 
+testDataDf = pd.read_csv("book30-listing-test.csv", header=None, usecols=[1,6], encoding_errors='replace')
+testDataDf[1] = 'input/224x224/' + testDataDf[1].astype(str) 
+testDataDf[1] = testDataDf[1].apply(convertImage)
+print(testDataDf.head())
 
-# Datasets
-partition = trainDataDf[1]
-labels = oneHotLabels
+training_labels = testDataDf[6]
+vectorizer = TextVectorization(output_mode = "binary", ngrams=2)
+vectorizer.adapt(training_labels)
+oneHotLabelsTest = vectorizer(training_labels)
+print(oneHotLabelsTest)"""
 
-# Generators
-training_generator = DataGenerator(partition['train'], labels, **params)
-validation_generator = DataGenerator(partition['validation'], labels, **params)
+#Train file 
+trainFile = open("bookcover30-labels-train.txt","r")
+trainList = trainFile.readlines()
+for i in range(len(trainList)-1):
+    trainList[i] = trainList[i].split()
+trainFile.close()
+
+X_train_filenames = []
+for i in range(len(trainList)-1): 
+    X_train_filenames.append(trainList[0])
+
+y_train = []
+for i in range(len(trainList)-1): 
+    y_train.append(trainList[1])
+
+#Test file
+testFile = open("bookcover30-labels-test.txt","r")
+testList = testFile.readlines()
+for i in range(len(testList)-1):
+    testList[i] = testList[i].split()
+testFile.close()
+
+X_test_filenames = []
+for i in range(len(testList)-1): 
+    X_test_filenames.append(testList[0])
+
+y_test = []
+for i in range(len(testList)-1): 
+    y_test.append(testList[1])
+
+training_batch = DataGenerator(X_train_filenames, y_train, 32)
+test_batch = DataGenerator(X_test_filenames, y_test, 32)
+
 
 """
 
