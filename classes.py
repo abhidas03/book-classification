@@ -1,5 +1,7 @@
 import numpy as np
 import keras
+from skimage.io import imread
+from skimage.transform import resize
 
 class DataGenerator(keras.utils.Sequence):
     def __init__(self, image_filenames, labels, batch_size): 
@@ -8,7 +10,7 @@ class DataGenerator(keras.utils.Sequence):
         self.batch_size = batch_size
 
     def __len__(self):
-        return(np.ceil(len(self.image_filenames) / float(self.batch_size))).astype(np.int)
+        return(np.ceil(len(self.image_filenames) / float(self.batch_size))).astype(int)
     
     def __getitem__(self, idx):
         batch_x = self.image_filenames[idx * self.batch_size: (idx+1) * self.batch_size]

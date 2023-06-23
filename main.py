@@ -1,12 +1,12 @@
 import pandas as pd
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import datasets, layers, models
+#from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
 import numpy as np
 from keras.models import Sequential
 from classes import DataGenerator
-from tensorflow.keras.layers import TextVectorization
+#from tensorflow.keras.layers import TextVectorization
 
 """def convertImage(filePath): 
     image = tf.keras.utils.load_img(filePath)
@@ -69,6 +69,60 @@ for i in range(len(testList)-1):
 
 training_batch = DataGenerator(X_train_filenames, y_train, 32)
 test_batch = DataGenerator(X_test_filenames, y_test, 32)
+
+from skimage.io import imread
+from skimage.transform import resize
+
+import keras
+from keras.models import Sequential, Model, load_model
+from keras.layers import Input, Conv1D, Conv2D, MaxPooling1D, MaxPooling2D, Dense, Dropout, Activation, Flatten, BatchNormalization
+from keras.utils import to_categorical
+
+model = Sequential()
+
+model.add(Conv2D(filters = 64, kernel_size = (5,5), activation ='relu',input_shape=(80,80,3)))
+model.add(BatchNormalization(axis=3))
+model.add(Conv2D(filters = 64, kernel_size = (5,5), activation ='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(BatchNormalization(axis=3))
+model.add(Dropout(0.25))
+
+model.add(Conv2D(filters = 128, kernel_size = (5,5), activation ='relu'))
+model.add(BatchNormalization(axis=3))
+model.add(Conv2D(filters = 128, kernel_size = (5,5), activation ='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(BatchNormalization(axis=3))
+model.add(Dropout(0.25))
+
+model.add(Conv2D(filters = 256, kernel_size = (5,5), activation ='relu'))
+model.add(BatchNormalization(axis=3))
+model.add(Conv2D(filters = 256, kernel_size = (5,5), activation ='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(BatchNormalization(axis=3))
+model.add(Dropout(0.25))
+
+model.add(Flatten())
+
+model.add(Dense(256, activation = "relu")) #Fully connected layer
+model.add(BatchNormalization())
+model.add(Dropout(0.5))
+
+model.add(Dense(60, activation = "relu")) #Fully connected layer
+model.add(BatchNormalization())
+model.add(Dropout(0.5))
+
+model.add(Dense(12, activation = "softmax")) #Classification layer or output layer
+
+model.compile(optimizer="adam", loss='categorical_crossentropy', metrics=['accuracy'])
+
+model.summary()
+
+model.fit(generator=training_batch,
+                   steps_per_epoch = int(3800 // 32),
+                   epochs = 10,
+                   verbose = 1,
+                   validation_data = test_batch,
+                   validation_steps = int(950 // 32))
 
 
 """
