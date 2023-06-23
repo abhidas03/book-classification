@@ -43,7 +43,7 @@ trainList = trainFile.readlines()
 for i in range(len(trainList)-1):
     trainList[i] = trainList[i].split()
 trainFile.close()
-
+print(trainList[0])
 X_train_filenames = []
 for i in range(len(trainList)-1): 
     X_train_filenames.append(trainList[0])
@@ -116,7 +116,7 @@ model.add(Dense(12, activation = "softmax")) #Classification layer or output lay
 model.compile(optimizer="adam", loss='categorical_crossentropy', metrics=['accuracy'])
 
 model.summary()
-
+print(training_batch.__getitem__(0))
 model.fit(x=training_batch,
                    steps_per_epoch = int(3800 // 32),
                    epochs = 10,
