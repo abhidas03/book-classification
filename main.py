@@ -45,12 +45,12 @@ for i in range(len(trainList)-1):
 trainFile.close()
 
 X_train_filenames = []
-for i in range(len(trainList)-1): 
-    X_train_filenames.append(trainList[0])
+for i in trainList: 
+    X_train_filenames.append(i[0])
 
 y_train = []
-for i in range(len(trainList)-1): 
-    y_train.append(trainList[1])
+for i in trainList: 
+    y_train.append(i[1])
 
 #Test file
 testFile = open("bookcover30-labels-test.txt","r")
@@ -60,12 +60,12 @@ for i in range(len(testList)-1):
 testFile.close()
 
 X_test_filenames = []
-for i in range(len(testList)-1): 
-    X_test_filenames.append(testList[0])
+for i in testList: 
+    X_test_filenames.append(i[0])
 
 y_test = []
-for i in range(len(testList)-1): 
-    y_test.append(testList[1])
+for i in testList: 
+    y_test.append(i[1])
 
 training_batch = DataGenerator(X_train_filenames, y_train, 32)
 test_batch = DataGenerator(X_test_filenames, y_test, 32)
@@ -117,7 +117,7 @@ model.compile(optimizer="adam", loss='categorical_crossentropy', metrics=['accur
 
 model.summary()
 
-model.fit(x=training_batch,
+model.fit(training_batch,
                    steps_per_epoch = int(3800 // 32),
                    epochs = 10,
                    verbose = 1,

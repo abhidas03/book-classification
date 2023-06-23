@@ -10,7 +10,7 @@ class DataGenerator(keras.utils.Sequence):
         self.batch_size = batch_size
 
     def __len__(self):
-        return(np.ceil(len(self.image_filenames) / float(self.batch_size))).astype(int)
+        return(np.ceil(len(self.image_filenames) / float(self.batch_size))).astype(float).astype(int)
     
     def __getitem__(self, idx):
         batch_x = self.image_filenames[idx * self.batch_size: (idx+1) * self.batch_size]
