@@ -40,7 +40,7 @@ print(oneHotLabelsTest)"""
 #Train file 
 trainFile = open("bookcover30-labels-train.txt","r")
 trainList = trainFile.readlines()
-for i in range(len(trainList)-1):
+for i in range(len(trainList)):
     trainList[i] = trainList[i].split()
 trainFile.close()
 
@@ -48,14 +48,17 @@ X_train_filenames = []
 for i in trainList: 
     X_train_filenames.append(i[0])
 
-y_train = []
+y_train_array = []
 for i in trainList: 
-    y_train.append(i[1])
+    y_train_array.append(int(i[1]))
+a = np.array(y_train_array)
+y_train = np.zeros((a.size, a.max()+1))
+y_train[np.arange(a.size),a] = 1
 
 #Test file
 testFile = open("bookcover30-labels-test.txt","r")
 testList = testFile.readlines()
-for i in range(len(testList)-1):
+for i in range(len(testList)):
     testList[i] = testList[i].split()
 testFile.close()
 
@@ -63,9 +66,12 @@ X_test_filenames = []
 for i in testList: 
     X_test_filenames.append(i[0])
 
-y_test = []
+y_test_array = []
 for i in testList: 
-    y_test.append(i[1])
+    y_test_array.append(int(i[1]))
+a = np.array(y_test_array)
+y_test = np.zeros((a.size, a.max()+1))
+y_test[np.arange(a.size),a] = 1
 
 training_batch = DataGenerator(X_train_filenames, y_train, 32)
 test_batch = DataGenerator(X_test_filenames, y_test, 32)
@@ -111,7 +117,7 @@ model.add(Dense(60, activation = "relu")) #Fully connected layer
 model.add(BatchNormalization())
 model.add(Dropout(0.5))
 
-model.add(Dense(12, activation = "softmax")) #Classification layer or output layer
+model.add(Dense(30, activation = "softmax")) #Classification layer or output layer
 
 model.compile(optimizer="adam", loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -124,7 +130,24 @@ model.fit(training_batch,
                    validation_data = test_batch,
                    validation_steps = int(950 // 32))
 
+import matplotlib.pyplot as plt
 
+# summarize history for accuracy
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['Train', 'Validation'], loc='upper left')
+plt.show()
+# summarize history for loss
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['Train', 'Validation'], loc='upper left')
+plt.show()
 """
 
 
