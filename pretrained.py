@@ -57,7 +57,12 @@ test_set = test_datagen.flow_from_dataframe(testDataDfLess,
                                             x_col='file',
                                             y_col='genre')
 
-r = model.fit(train_set, validation_data=test_set, epochs = 5, steps_per_epoch=1000, validation_steps=100)
+from keras import callbacks
+earlystopping = callbacks.EarlyStopping(monitor="val_loss",
+                                        mode="min", patience=5,
+                                        restore_best_weights=True)
+
+r = model.fit(train_set, validation_data=test_set, epochs = 3, batch_size= 64, callbacks=[earlystopping])
 
 model_json = model.to_json()
 with open("model.json", "w") as json_file:
