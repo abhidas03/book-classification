@@ -49,7 +49,7 @@ print(y_train_encoded[0])
 X_train = np.array([x for x in X_train])
 X_train = X_train.reshape(-1, 224, 224, 3)
 X_train = X_train.astype('float32')
-
+print((X_train))
 
 X_test = np.array([x for x in X_test])
 X_test = X_test.reshape(-1, 224, 224, 3)
@@ -64,11 +64,7 @@ model = Sequential([
     Conv2D(filters=32,kernel_size=(3, 3), padding='same', activation='relu',input_shape = (224, 224, 3)),
     Conv2D(filters=32,kernel_size=(3, 3), padding='same', activation='relu'),
     MaxPooling2D(pool_size=2) ,
-    Dropout(0.25),
-    Conv2D(filters=32,kernel_size=(3, 3), padding='same', activation='relu'),
-    Conv2D(filters=32,kernel_size=(3, 3), padding='same', activation='relu'),
-    MaxPooling2D(pool_size=2),
-    Dropout(0.25),
+    Dropout(0.5),
     Flatten(), # flatten out the layers
     Dense(256,activation='relu'),
     Dense(256,activation='relu'),
@@ -81,7 +77,6 @@ epochs = 3
 
 model.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'])
 model.fit(X_train, y_train_encoded, batch_size = batch_size, epochs = epochs, verbose = 1, validation_data=(X_test, y_test_encoded))
-
 
 score = model.evaluate(X_test, y_test_encoded, verbose=0)
 print("Test accuracy:", score[1]*100)

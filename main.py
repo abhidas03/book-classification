@@ -43,7 +43,7 @@ trainList = trainFile.readlines()
 for i in range(len(trainList)):
     trainList[i] = trainList[i].split()
 trainFile.close()
-
+print(trainList[0])
 X_train_filenames = []
 for i in trainList: 
     X_train_filenames.append(i[0])
