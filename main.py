@@ -73,8 +73,9 @@ a = np.array(y_test_array)
 y_test = np.zeros((a.size, a.max()+1))
 y_test[np.arange(a.size),a] = 1
 
-training_batch = DataGenerator(X_train_filenames, y_train, 32)
-test_batch = DataGenerator(X_test_filenames, y_test, 32)
+batch_size = 64
+training_batch = DataGenerator(X_train_filenames, y_train, batch_size)
+test_batch = DataGenerator(X_test_filenames, y_test, batch_size)
 
 from skimage.io import imread
 from skimage.transform import resize
@@ -124,30 +125,13 @@ model.compile(optimizer="adam", loss='categorical_crossentropy', metrics=['accur
 model.summary()
 
 model.fit(training_batch,
-                   steps_per_epoch = int(3800 // 32),
-                   epochs = 10,
+                   steps_per_epoch = int(51300 // batch_size),
+                   epochs = 6,
                    verbose = 1,
                    validation_data = test_batch,
-                   validation_steps = int(950 // 32))
+                   validation_steps = int(5700 // batch_size))
 
-import matplotlib.pyplot as plt
 
-# summarize history for accuracy
-plt.plot(history.history['accuracy'])
-plt.plot(history.history['val_accuracy'])
-plt.title('model accuracy')
-plt.ylabel('accuracy')
-plt.xlabel('epoch')
-plt.legend(['Train', 'Validation'], loc='upper left')
-plt.show()
-# summarize history for loss
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.title('model loss')
-plt.ylabel('loss')
-plt.xlabel('epoch')
-plt.legend(['Train', 'Validation'], loc='upper left')
-plt.show()
 """
 
 
