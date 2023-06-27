@@ -1,4 +1,5 @@
 from keras.layers import Dense, Flatten
+import keras.models
 from keras.models import Model
 from keras.applications.vgg16 import VGG16
 from keras.preprocessing.image import ImageDataGenerator
@@ -62,14 +63,8 @@ earlystopping = callbacks.EarlyStopping(monitor="val_loss",
                                         mode="min", patience=5,
                                         restore_best_weights=True)
 
-r = model.fit(train_set, validation_data=test_set, epochs = 3, batch_size= 64, callbacks=[earlystopping])
+r = model.fit(train_set, validation_data=test_set, epochs = 1, batch_size= 64, callbacks=[earlystopping])
 
-model_json = model.to_json()
-with open("model.json", "w") as json_file:
-    json_file.write(model_json)
-# serialize weights to HDF5
-model.save_weights("model.h5")
-
-
-
-
+model.save('./saved_models/model_firstsave')
+model = keras.models.load_model('./saved_models/model_firstsave')
+print(model.summary())
