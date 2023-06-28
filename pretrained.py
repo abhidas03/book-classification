@@ -1,3 +1,5 @@
+import tensorflow as tf
+from tensorflow import keras
 from keras.layers import Dense, Flatten
 import keras.models
 from keras.models import Model
@@ -11,20 +13,18 @@ for layer in vgg.layers:
     layer.trainable = False
 
 trainDataDf = pd.read_csv("input/bookcover30-labels-train.csv", header=None, encoding_errors='replace')
-trainDataDfLess = trainDataDf.head(5000)
 testDataDf = pd.read_csv("input/bookcover30-labels-test.csv", header=None, encoding_errors='replace')
-testDataDfLess = testDataDf.head(500)
 
 #Get correct file path
-trainDataDfLess.iloc[:, 0] = 'input/224x224/' + trainDataDfLess.iloc[:, 0]
-testDataDfLess.iloc[:, 0] = 'input/224x224/' + testDataDfLess.iloc[:, 0]
+trainDataDf.iloc[:, 0] = 'input/224x224/' + trainDataDf.iloc[:, 0]
+testDataDf.iloc[:, 0] = 'input/224x224/' + testDataDf.iloc[:, 0]
 
 #Label columns for later
-trainDataDfLess.columns = ['file', 'genre']
-testDataDfLess.columns = ['file', 'genre']
+trainDataDf.columns = ['file', 'genre']
+testDataDf.columns = ['file', 'genre']
 
-print(trainDataDfLess.head())
-print(testDataDfLess.head())
+print(trainDataDf.head())
+print(testDataDf.head())
 
 #Flatten output of vgg model
 x = Flatten()(vgg.output)
@@ -40,25 +40,23 @@ model.summary()
 from keras import optimizers
 
 #Using legacy adam bc of recent errors with Mac M1/M2 (use regular fixed)
-adam = optimizers.legacy.Adam()
-
 
 model.compile(loss='categorical_crossentropy',
-              optimizer=adam,
+              optimizer='adam',
               metrics=['accuracy'])
 
 train_datagen = ImageDataGenerator(rescale=1./255, shear_range=0.2, zoom_range=0.2, horizontal_flip=False)
 test_datagen = ImageDataGenerator(rescale=1./255)
 
 
-train_set = train_datagen.flow_from_dataframe(trainDataDfLess,
+train_set = train_datagen.flow_from_dataframe(trainDataDf,
                                               target_size=(224, 224),
                                               batch_size= 64,
                                               class_mode='categorical',
                                               x_col='file',
                                               y_col='genre')
 
-test_set = test_datagen.flow_from_dataframe(testDataDfLess,
+test_set = test_datagen.flow_from_dataframe(testDataDf,
                                             target_size=(224, 224),
                                             batch_size= 64,
                                             class_mode='categorical',
@@ -71,8 +69,8 @@ earlystopping = callbacks.EarlyStopping(monitor="val_loss",
                                         mode="min", patience=5,
                                         restore_best_weights=True)
 
-r = model.fit(train_set, validation_data=test_set, epochs = 3, batch_size= 64, callbacks=[earlystopping])
+r = model.fit(train_set, validation_data=test_set, epochs = 5, batch_size= 64, callbacks=[earlystopping])
 
-model.save('./saved_models/model_firstsave')
-model = keras.models.load_model('./saved_models/model_firstsave')
+model.save('./saved_models/model_secondsave')
+model = keras.models.load_model('./saved_models/model_secondsave')
 print(model.summary())
