@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
-from keras.layers import Dense, Flatten
+from keras.layers import Dense, Flatten, GlobalAveragePooling2D, BatchNormalization, Dropout
 import keras.models
 from keras.models import Model
 from keras.applications.vgg16 import VGG16
@@ -27,7 +27,12 @@ print(trainDataDf.head())
 print(testDataDf.head())
 
 #Flatten output of vgg model
-x = Flatten()(vgg.output)
+
+x = vgg.output
+x = BatchNormalization()(x)
+x = Dense(256, activation ='relu')(x)
+x = Dropout(0.4)(x)
+x = Flatten()(x)
 
 #Combine vgg model with a output layer
 prediction = Dense(30, activation='softmax')(x)
@@ -45,9 +50,8 @@ model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
-train_datagen = ImageDataGenerator(rescale=1./255, shear_range=0.2, zoom_range=0.2, horizontal_flip=False)
+train_datagen = ImageDataGenerator(rescale=1./255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True, vertical_flip=True)
 test_datagen = ImageDataGenerator(rescale=1./255)
-
 
 train_set = train_datagen.flow_from_dataframe(trainDataDf,
                                               target_size=(224, 224),
@@ -69,8 +73,8 @@ earlystopping = callbacks.EarlyStopping(monitor="val_loss",
                                         mode="min", patience=5,
                                         restore_best_weights=True)
 
-r = model.fit(train_set, validation_data=test_set, epochs = 5, batch_size= 64, callbacks=[earlystopping])
+r = model.fit(train_set, validation_data=test_set, epochs = 10, batch_size= 64, callbacks=[earlystopping])
 
 model.save('./saved_models/model_secondsave')
 model = keras.models.load_model('./saved_models/model_secondsave')
-print(model.summary())
+
