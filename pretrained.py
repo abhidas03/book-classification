@@ -3,7 +3,7 @@ from tensorflow import keras
 from keras.layers import Dense, Flatten, GlobalAveragePooling2D, BatchNormalization, Dropout
 import keras.models
 from keras.models import Model
-from keras.applications.vgg16 import VGG16
+from keras.applications.vgg16 import VGG16, preprocess_input
 from keras.preprocessing.image import ImageDataGenerator
 
 import pandas as pd
@@ -51,8 +51,8 @@ model.compile(loss='categorical_crossentropy',
               optimizer=optimizer,
               metrics=['accuracy'])
 
-train_datagen = ImageDataGenerator(rescale=1./255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True, vertical_flip=True)
-test_datagen = ImageDataGenerator(rescale=1./255)
+train_datagen = ImageDataGenerator(preprocessing_function=preprocess_input, shear_range=0.2, zoom_range=0.2, horizontal_flip=True, vertical_flip=False)
+test_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
 
 train_set = train_datagen.flow_from_dataframe(trainDataDf,
                                               target_size=(224, 224),
@@ -74,8 +74,7 @@ earlystopping = callbacks.EarlyStopping(monitor="val_loss",
                                         mode="min", patience=5,
                                         restore_best_weights=True)
 
-r = model.fit(train_set, validation_data=test_set, epochs = 15, batch_size= 64, callbacks=[earlystopping])
+r = model.fit(train_set, validation_data=test_set, epochs = 8, batch_size= 64, callbacks=[earlystopping])
 
-model.save('./saved_models/model_thirdsave')
-model = keras.models.load_model('./saved_models/model_thirdsave')
+model.save('./saved_models/model_asave')
 
