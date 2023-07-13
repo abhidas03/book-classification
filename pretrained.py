@@ -31,7 +31,7 @@ print(testDataDf.head())
 x = vgg.output
 x = BatchNormalization()(x)
 x = Dense(256, activation ='relu')(x)
-x = Dropout(0.4)(x)
+x = Dropout(0.5)(x)
 x = Flatten()(x)
 
 #Combine vgg model with a output layer
@@ -46,8 +46,9 @@ from keras import optimizers
 
 #Using legacy adam bc of recent errors with Mac M1/M2 (use regular fixed)
 
+optimizer = optimizers.Adam(learning_rate=0.0005)
 model.compile(loss='categorical_crossentropy',
-              optimizer='adam',
+              optimizer=optimizer,
               metrics=['accuracy'])
 
 train_datagen = ImageDataGenerator(rescale=1./255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True, vertical_flip=True)
@@ -73,8 +74,8 @@ earlystopping = callbacks.EarlyStopping(monitor="val_loss",
                                         mode="min", patience=5,
                                         restore_best_weights=True)
 
-r = model.fit(train_set, validation_data=test_set, epochs = 10, batch_size= 64, callbacks=[earlystopping])
+r = model.fit(train_set, validation_data=test_set, epochs = 15, batch_size= 64, callbacks=[earlystopping])
 
-model.save('./saved_models/model_secondsave')
-model = keras.models.load_model('./saved_models/model_secondsave')
+model.save('./saved_models/model_thirdsave')
+model = keras.models.load_model('./saved_models/model_thirdsave')
 
