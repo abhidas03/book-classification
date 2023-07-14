@@ -31,7 +31,7 @@ print(testDataDf.head())
 x = vgg.output
 x = BatchNormalization()(x)
 x = Dense(256, activation ='relu')(x)
-x = Dropout(0.4)(x)
+x = Dropout(0.5)(x)
 x = Flatten()(x)
 
 #Combine vgg model with a output layer
@@ -46,8 +46,9 @@ from keras import optimizers
 
 #Using legacy adam bc of recent errors with Mac M1/M2 (use regular fixed)
 
+optimizer = optimizers.Adam(learning_rate=0.0005)
 model.compile(loss='categorical_crossentropy',
-              optimizer='adam',
+              optimizer=optimizer,
               metrics=['accuracy'])
 
 train_datagen = ImageDataGenerator(preprocessing_function=preprocess_input, shear_range=0.2, zoom_range=0.2, horizontal_flip=True, vertical_flip=False)
