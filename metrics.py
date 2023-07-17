@@ -3,9 +3,9 @@ import keras.models
 import tensorflow as tf
 import numpy as np
 from keras.applications.vgg16 import preprocess_input
-import matplotlib
-matplotlib.use('GTK3Agg')
 import matplotlib.pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix
 
 # PLAN FOR VISUALIZING DATA
 # To get true labels array and predictions array
@@ -28,7 +28,8 @@ num_to_class = {0: 'Arts & Photography', 1: 'Biographies & Memoirs', 2:'Business
                 24: 'Science Fiction & Fantasy', 25: 'Self-Help', 26: 'Sports & Outdoors', 27: 'Teen & Young Adult',
                 28: 'Test Preparation', 29: 'Travel' }
 
-model = keras.models.load_model("./saved_models/model_secondsave/")
+#load saved model
+model = keras.models.load_model("./saved_models/model_asave/")
 
 def convertImage(filePath):
     image = tf.keras.utils.load_img(filePath)
@@ -51,7 +52,6 @@ for line in f:
     image = image.reshape(-1, 224, 224, 3)
     image = image.astype('float32')
     preprocess_input(image)
-
     y_prob = model.predict(image)
     y_pred.append(y_prob.argmax(axis=-1)[0])
 
@@ -63,11 +63,19 @@ print(y_true)
 print('labels')
 print(y_labels)
 
-from sklearn.metrics import ConfusionMatrixDisplay
-from sklearn.metrics import confusion_matrix
+
 
 cm = confusion_matrix(y_true=y_true, y_pred=y_pred, normalize='true')
 print(cm)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=y_labels)
-disp.plot()
-plt.show()
+np.savetxt('confusion.txt', cm)
+
+'''
+EVERYTHING ABOVE IN SSH - THEN COPY TXT FILE TO LAPTOP, 
+COMMENT OUT CODE ABOVE, RUN JUST THE CODE COMMENTED BELOW
+'''
+
+# cm = np.loadtxt('confusion.txt')
+
+# disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=y_labels)
+# disp.plot(include_values=False, xticks_rotation='vertical')
+# plt.show()
