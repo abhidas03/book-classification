@@ -16,7 +16,7 @@ num_to_class = {0: 'Arts & Photography', 1: 'Biographies & Memoirs', 2:'Business
 # for each category, will have a list of two numbers
 # first number: # times a book of that category was guessed correctly
 # second number: # times a book of that category was guessed incorrectly
-amountCorrectForEachCategory = defaultdict(list)
+amountCorrectForEachCategory = dict()
 
 
 model = keras.models.load_model("./saved_models/model_asave/")
@@ -34,41 +34,46 @@ def convertImage(filePath):
 # if wrong add one to second number
 f = open("bookcover30-labels-test.txt")
 from keras.applications.vgg16 import preprocess_input
-
-
-bigSumOfError = 0
-count = 0
-for i in range(200):
-    line = f.readline()
-    count += 1
-    image, category = line.split()
+for line in f:
+    image, category = line.split(' ', 1)
     temp = image
 
     image = np.array(convertImage('input/224x224/{0}'.format(image)))
-    image = image.astype(float)
-    image = image.reshape(-1, 224, 224, 3)
-    preprocess_input(image)
-    # image = image/255
+    image = np.reshape(image, (-1, 224, 224, 3))
+    image = image.astype('float32')
+    image = preprocess_input(image)
 
+    #Predictions based on if it's in the top 3
     y_prob = model.predict(image)
-    y_classes = y_prob.argmax(axis=-1)[0]
+    sorted_index_array = np.argsort(y_prob)[0]
+    y_most_likely = sorted_index_array[-3 : ]
     category = int(category)
-
-    patError= y_prob[0]
-    print(y_prob)
-    patError[category] = patError[category]-1
-    sumTotal = 0
-    for i in range(len(patError)):
-         sumTotal += patError[i]**2
+    if (category in y_most_likely):
+        amountCorrectForEachCategory.setdefault(category, [0, 0])[0] += 1
+    else:
+        amountCorrectForEachCategory.setdefault(category, [0, 0])[1] += 1
+    #----
+    # print('{0} Actual:{1} Prediction:{2}, {3}, {4}'.format(temp, num_to_class[category], num_to_class[y_most_likely[0]], 
+    # num_to_class[y_most_likely[1]], num_to_class[y_most_likely[2]]))
+    #----
     
-    bigSumOfError += math.sqrt(sumTotal) 
 
-    # if (y_classes == category):
-    #     amountCorrectForEachCategory.setdefault(category, [0, 0])[0] += 1
-    # else:
-    #     amountCorrectForEachCategory.setdefault(category, [0, 0])[1] += 1
-
-print(bigSumOfError / count)
+    """    
+    Predictions based on random selection on given probabilities
+    y_prob = model.predict(image)
+    print(y_prob[0])
+    y_most_likely = np.random.choice(y_prob[0], p=y_prob[0])
+    print(y_most_likely)
+    guess_index = np.where(y_prob[0]==y_most_likely)[0][0]
+    print(guess_index)
+    category = int(category)
+    if (category == y_most_likely):
+        amountCorrectForEachCategory.setdefault(category, [0, 0])[0] += 1
+    else:
+        amountCorrectForEachCategory.setdefault(category, [0, 0])[1] += 1
+    #----
+    print('{0} Actual:{1} Prediction:{2}'.format(temp, num_to_class[category], num_to_class[guess_index]))
+    #----"""
 
 for key in amountCorrectForEachCategory:
     key = int(key)

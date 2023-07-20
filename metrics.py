@@ -28,6 +28,9 @@ num_to_class = {0: 'Arts & Photography', 1: 'Biographies & Memoirs', 2:'Business
                 24: 'Science Fiction & Fantasy', 25: 'Self-Help', 26: 'Sports & Outdoors', 27: 'Teen & Young Adult',
                 28: 'Test Preparation', 29: 'Travel' }
 
+bad_to_good = {0: 0, 1: 1, 2: 10, 3: 11, 4: 12, 5: 13, 6: 14, 7: 15, 8: 16, 9: 17, 10: 18, 
+               11: 19, 12: 2, 13: 20, 14: 21, 15: 22, 16: 23, 17: 24, 18: 25, 19: 26, 20: 27, 
+               21: 28, 22: 29, 23: 3, 24: 4, 25: 5, 26: 6, 27: 7, 28: 8, 29: 9}
 #load saved model
 model = keras.models.load_model("./saved_models/model_asave/")
 
@@ -52,22 +55,20 @@ for line in f:
     image = image.reshape(-1, 224, 224, 3)
     image = image.astype('float32')
     preprocess_input(image)
+
     y_prob = model.predict(image)
-    y_pred.append(y_prob.argmax(axis=-1)[0])
-
-y_labels = list(num_to_class.values())
-print('pred')
-print(y_pred)
-print('true')
-print(y_true)
-print('labels')
-print(y_labels)
+    prediction = y_prob.argmax(axis=-1)[0]
+    prediction = bad_to_good[prediction]
+    y_pred.append(prediction)
 
 
-
+#Create Confusion Matrix
+y_labels = np.array(num_to_class.values())
+y_true = np.array(y_true)
+y_pred = np.array(y_pred)
 cm = confusion_matrix(y_true=y_true, y_pred=y_pred, normalize='true')
 print(cm)
-np.savetxt('confusion.txt', cm)
+np.savetxt('goodNums.txt', cm)
 
 '''
 EVERYTHING ABOVE IN SSH - THEN COPY TXT FILE TO LAPTOP, 
