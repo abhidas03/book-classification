@@ -31,7 +31,7 @@ print(testDataDf.head())
 x = vgg.output
 x = BatchNormalization()(x)
 x = Dense(256, activation ='relu')(x)
-x = Dropout(0.5)(x)
+x = Dropout(0.7)(x)
 x = Flatten()(x)
 
 #Combine vgg model with a output layer
@@ -74,7 +74,7 @@ earlystopping = callbacks.EarlyStopping(monitor="val_loss",
                                         mode="min", patience=5,
                                         restore_best_weights=True)
 
-r = model.fit(train_set, validation_data=test_set, epochs = 8, batch_size= 64, callbacks=[earlystopping])
+r = model.fit(train_set, validation_data=test_set, epochs = 10, batch_size= 64, callbacks=[earlystopping])
 
-model.save('./saved_models/model_asave')
+model.save('./saved_models/model_newsave')
 
