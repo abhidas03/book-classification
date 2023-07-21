@@ -3,7 +3,7 @@ import keras.models
 import tensorflow as tf
 import numpy as np
 from collections import defaultdict
-
+import math
 num_to_class = {0: 'Arts & Photography', 1: 'Biographies & Memoirs', 2:'Business & Money', 3: 'Calendars', 
                 4: 'Children\'s Books',	5: 'Comics & Graphic Novels', 6:'Computers & Technology',  7: 'Cookbooks, Food & Wine',
                 8: 'Crafts, Hobbies & Home', 9: 'Christian Books & Bibles', 10: 'Engineering & Transportation',  11: 'Health, Fitness & Dieting',
@@ -23,7 +23,7 @@ wrong_to_right = {0: 0, 1: 1, 2: 10, 3: 11, 4: 12, 5: 13, 6: 14, 7: 15, 8: 16, 9
 amountCorrectForEachCategory = dict()
 
 
-model = keras.models.load_model("./saved_models/model_newsave/")
+model = keras.models.load_model("./saved_models/model_asave/")
 
 def convertImage(filePath):
     image = tf.keras.utils.load_img(filePath)

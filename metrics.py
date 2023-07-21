@@ -32,6 +32,9 @@ wrong_to_right = {0: 0, 1: 1, 2: 10, 3: 11, 4: 12, 5: 13, 6: 14, 7: 15, 8: 16, 9
                11: 19, 12: 2, 13: 20, 14: 21, 15: 22, 16: 23, 17: 24, 18: 25, 19: 26, 20: 27, 
                21: 28, 22: 29, 23: 3, 24: 4, 25: 5, 26: 6, 27: 7, 28: 8, 29: 9}
 
+bad_to_good = {0: 0, 1: 1, 2: 10, 3: 11, 4: 12, 5: 13, 6: 14, 7: 15, 8: 16, 9: 17, 10: 18, 
+               11: 19, 12: 2, 13: 20, 14: 21, 15: 22, 16: 23, 17: 24, 18: 25, 19: 26, 20: 27, 
+               21: 28, 22: 29, 23: 3, 24: 4, 25: 5, 26: 6, 27: 7, 28: 8, 29: 9}
 #load saved model
 model = keras.models.load_model("./saved_models/model_newsave/")
 
@@ -57,25 +60,20 @@ for line in f:
     image = image.astype('float32')
     image = preprocess_input(image)
 
+
     y_prob = model.predict(image)
-    pre_y_most_likely = y_prob.argmax(axis=-1)[0]
-    y_most_likely = wrong_to_right[pre_y_most_likely]
-    y_pred.append(y_most_likely)
-
-y_labels = list(num_to_class.values())
-y_label_num = list(num_to_class.keys())
-print('pred')
-print(y_pred)
-print('true')
-print(y_true)
-print('labels')
-print(y_labels)
+    prediction = y_prob.argmax(axis=-1)[0]
+    prediction = bad_to_good[prediction]
+    y_pred.append(prediction)
 
 
-
-cm = confusion_matrix(y_true=y_true, y_pred=y_pred, normalize='true', labels=y_label_num)
+#Create Confusion Matrix
+y_labels = np.array(num_to_class.values())
+y_true = np.array(y_true)
+y_pred = np.array(y_pred)
+cm = confusion_matrix(y_true=y_true, y_pred=y_pred, normalize='true')
 print(cm)
-np.savetxt('confusionUpdated.txt', cm)
+np.savetxt('goodNums.txt', cm)
 
 '''
 EVERYTHING ABOVE IN SSH - THEN COPY TXT FILE TO LAPTOP, 
