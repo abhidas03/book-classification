@@ -13,6 +13,11 @@ num_to_class = {0: 'Arts & Photography', 1: 'Biographies & Memoirs', 2:'Business
                 24: 'Science Fiction & Fantasy', 25: 'Self-Help', 26: 'Sports & Outdoors', 27: 'Teen & Young Adult',
                 28: 'Test Preparation', 29: 'Travel' }
 
+bad_to_good = {0: 0, 1: 1, 2: 10, 3: 11, 4: 12, 5: 13, 6: 14, 7: 15, 8: 16, 9: 17, 10: 18, 
+               11: 19, 12: 2, 13: 20, 14: 21, 15: 22, 16: 23, 17: 24, 18: 25, 19: 26, 20: 27, 
+               21: 28, 22: 29, 23: 3, 24: 4, 25: 5, 26: 6, 27: 7, 28: 8, 29: 9}
+
+
 # for each category, will have a list of two numbers
 # first number: # times a book of that category was guessed correctly
 # second number: # times a book of that category was guessed incorrectly
